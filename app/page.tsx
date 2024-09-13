@@ -97,7 +97,9 @@ export default function HomePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button className="w-full">Solicitar Ajuda</Button>
+                <Link href="/chat">
+                  <Button className="w-full">Solicitar Ajuda</Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
