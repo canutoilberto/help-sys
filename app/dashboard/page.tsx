@@ -97,7 +97,9 @@ export default function DashboardPage() {
                 <Input placeholder="Buscar problemas" className="pl-8" />
               </div>
               <div>
-                <span>Olá, {user?.displayName}</span>
+                <span className="hidden lg:block">
+                  Olá, {user?.displayName}
+                </span>
               </div>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
