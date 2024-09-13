@@ -71,7 +71,7 @@ const issues = [
 ];
 
 export default function DashboardPage() {
-  const { setUser } = useUserStore();
+  const { user, setUser } = useUserStore();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -95,6 +95,9 @@ export default function DashboardPage() {
               <div className="relative w-64">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                 <Input placeholder="Buscar problemas" className="pl-8" />
+              </div>
+              <div>
+                <span>Olá, {user?.displayName}</span>
               </div>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
