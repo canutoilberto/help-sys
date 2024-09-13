@@ -71,7 +71,7 @@ const issues = [
 ];
 
 export default function DashboardPage() {
-  const { user, setUser } = useUserStore();
+  const { setUser } = useUserStore();
   const router = useRouter();
 
   const handleLogout = async () => {
