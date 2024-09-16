@@ -1,7 +1,8 @@
 "use client";
 
-import { useUserStore } from "@/store/userStore";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { ProtectedLayout } from "@/components/ProtectedLayout";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -26,45 +27,53 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useUserStore } from "@/store/userStore";
 
 const issues = [
   {
+    id: "hardware",
     title: "Problemas com Hardware",
     description: "Computadores, laptops, periféricos",
     icon: Laptop,
   },
   {
+    id: "network",
     title: "Problemas de Rede",
     description: "Conexão Wi-Fi, internet lenta",
     icon: Wifi,
   },
   {
+    id: "software",
     title: "Problemas de Software",
     description: "Instalação, atualizações, erros",
     icon: HardDrive,
   },
   {
+    id: "printing",
     title: "Problemas de Impressão",
     description: "Configuração, papel preso, qualidade",
     icon: Printer,
   },
   {
+    id: "av",
     title: "Problemas de Áudio/Vídeo",
     description: "Chamadas, videoconferências",
     icon: Headphones,
   },
   {
+    id: "email",
     title: "Problemas de E-mail",
     description: "Configuração, spam, sincronização",
     icon: Mail,
   },
   {
+    id: "security",
     title: "Segurança e Acesso",
     description: "Senhas, permissões, antivírus",
     icon: Lock,
   },
   {
+    id: "other",
     title: "Outros Problemas",
     description: "Questões não listadas",
     icon: HelpCircle,
@@ -72,68 +81,65 @@ const issues = [
 ];
 
 export default function DashboardPage() {
+  const { loading } = useAuthContext();
   const { user, setUser } = useUserStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       setUser(null);
-      localStorage.removeItem("user-storage"); // Limpa o localStorage
       router.push("/auth/login");
     } catch (error) {
       console.error("Erro ao fazer logout", error);
     }
   };
 
-  useEffect(() => setMounted(true), []);
-
   return (
     <ProtectedLayout>
-      {mounted && (
-        <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-6">
-            <header className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-              <h1 className="text-2xl font-bold text-gray-900">Suporte TI</h1>
-              <div className="flex items-center space-x-4">
-                <div className="relative w-64">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input placeholder="Buscar problemas" className="pl-8" />
-                </div>
-                <div>
-                  <span className="hidden lg:block">
-                    Olá, {user?.displayName}
-                  </span>
-                </div>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sair
-                </Button>
+      <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <header className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <h1 className="text-2xl font-bold text-gray-900">Suporte TI</h1>
+            <div className="flex items-center space-x-4">
+              <div className="relative w-64">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                <Input placeholder="Buscar problemas" className="pl-8" />
               </div>
-            </header>
+              <p className="hidden sm:block">Olá, {user?.displayName}</p>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
+            </div>
+          </header>
 
-            <main className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {issues.map((issue, index) => (
-                <Card key={index} className="flex flex-col justify-between">
-                  <CardHeader>
-                    <div className="flex items-center space-x-4">
-                      <issue.icon className="h-6 w-6 text-primary" />
-                      <div>
-                        <CardTitle className="text-lg">{issue.title}</CardTitle>
-                        <CardDescription>{issue.description}</CardDescription>
-                      </div>
+          <main className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {issues.map((issue) => (
+              <Card key={issue.id} className="flex flex-col justify-between">
+                <CardHeader>
+                  <div className="flex items-center space-x-4">
+                    <issue.icon className="h-6 w-6 text-primary" />
+                    <div>
+                      <CardTitle className="text-lg">{issue.title}</CardTitle>
+                      <CardDescription>{issue.description}</CardDescription>
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Link href={`/chat/${issue.id}`}>
                     <Button className="w-full">Solicitar Ajuda</Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </main>
-          </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </main>
         </div>
-      )}
+      </div>
     </ProtectedLayout>
   );
 }

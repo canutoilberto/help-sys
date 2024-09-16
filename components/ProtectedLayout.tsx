@@ -1,24 +1,24 @@
 "use client";
 
-import { useUserStore } from "@/store/userStore";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const user = useUserStore((state) => state.user);
+  const { user, loading } = useAuthContext();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       router.push("/auth/login");
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
-  if (!user) {
-    return null;
+  if (loading) {
+    return <div>Carregando...</div>;
   }
 
-  return <>{children}</>;
+  return user ? <>{children}</> : null;
 };
