@@ -24,7 +24,6 @@ export const useUserStore = create(
           {
             email: user.email,
             displayName: user.displayName,
-            photoURL: user.photoURL,
             createdAt: new Date(),
           },
           { merge: true }
