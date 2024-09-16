@@ -41,22 +41,22 @@ export default function CadastroPage() {
       await updateProfile(userCredential.user, { displayName: nome });
       await createUserInFirestore(userCredential.user);
       setUser(userCredential.user);
-      router.push("/dashboard");
+      router.push("/auth/login");
     } catch (error) {
       setError("Falha no cadastro. Por favor, tente novamente.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-0">
+      <Card className="w-full h-full sm:h-auto sm:max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             Cadastro
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleCadastro}>
+          <form onSubmit={handleCadastro} className="space-y-4">
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="nome">Nome</Label>
