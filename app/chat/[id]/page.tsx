@@ -74,7 +74,7 @@ export default function ChatPage() {
         <header className="bg-white shadow-sm p-4 flex items-center justify-between">
           <div className="flex items-center">
             <Avatar className="h-10 w-10 mr-3">
-              <AvatarImage src="/placeholder-avatar.jpg" alt="Suporte TI" />
+              <AvatarImage src="https://i.pravatar.cc/300" alt="Suporte TI" />
               <AvatarFallback>TI</AvatarFallback>
             </Avatar>
             <div>
