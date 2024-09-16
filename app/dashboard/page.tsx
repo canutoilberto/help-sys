@@ -26,6 +26,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const issues = [
   {
@@ -73,6 +74,7 @@ const issues = [
 export default function DashboardPage() {
   const { user, setUser } = useUserStore();
   const router = useRouter();
+  const [monted, setMounted] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -85,49 +87,53 @@ export default function DashboardPage() {
     }
   };
 
+  useEffect(() => setMounted(true), []);
+
   return (
     <ProtectedLayout>
-      <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <header className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <h1 className="text-2xl font-bold text-gray-900">Suporte TI</h1>
-            <div className="flex items-center space-x-4">
-              <div className="relative w-64">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                <Input placeholder="Buscar problemas" className="pl-8" />
+      {monted && (
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto space-y-6">
+            <header className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+              <h1 className="text-2xl font-bold text-gray-900">Suporte TI</h1>
+              <div className="flex items-center space-x-4">
+                <div className="relative w-64">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input placeholder="Buscar problemas" className="pl-8" />
+                </div>
+                <div>
+                  <span className="hidden lg:block">
+                    Olá, {user?.displayName}
+                  </span>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </Button>
               </div>
-              <div>
-                <span className="hidden lg:block">
-                  Olá, {user?.displayName}
-                </span>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sair
-              </Button>
-            </div>
-          </header>
+            </header>
 
-          <main className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {issues.map((issue, index) => (
-              <Card key={index} className="flex flex-col justify-between">
-                <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <issue.icon className="h-6 w-6 text-primary" />
-                    <div>
-                      <CardTitle className="text-lg">{issue.title}</CardTitle>
-                      <CardDescription>{issue.description}</CardDescription>
+            <main className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {issues.map((issue, index) => (
+                <Card key={index} className="flex flex-col justify-between">
+                  <CardHeader>
+                    <div className="flex items-center space-x-4">
+                      <issue.icon className="h-6 w-6 text-primary" />
+                      <div>
+                        <CardTitle className="text-lg">{issue.title}</CardTitle>
+                        <CardDescription>{issue.description}</CardDescription>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full">Solicitar Ajuda</Button>
-                </CardContent>
-              </Card>
-            ))}
-          </main>
+                  </CardHeader>
+                  <CardContent>
+                    <Button className="w-full">Solicitar Ajuda</Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </main>
+          </div>
         </div>
-      </div>
+      )}
     </ProtectedLayout>
   );
 }
