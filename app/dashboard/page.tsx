@@ -74,7 +74,7 @@ const issues = [
 export default function DashboardPage() {
   const { user, setUser } = useUserStore();
   const router = useRouter();
-  const [monted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -91,7 +91,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedLayout>
-      {monted && (
+      {mounted && (
         <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
             <header className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
