@@ -26,7 +26,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const issues = [
   {
@@ -75,6 +75,7 @@ export default function DashboardPage() {
   const { user, setUser } = useUserStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleLogout = async () => {
     try {
@@ -89,6 +90,16 @@ export default function DashboardPage() {
 
   useEffect(() => setMounted(true), []);
 
+  const filteredIssues = useMemo(
+    () =>
+      issues.filter(
+        (issue) =>
+          issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          issue.description.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
+  );
+
   return (
     <ProtectedLayout>
       {mounted && (
@@ -99,7 +110,12 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-4">
                 <div className="relative w-64">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input placeholder="Buscar problemas" className="pl-8" />
+                  <Input
+                    placeholder="Buscar problemas"
+                    className="pl-8"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
                 <div>
                   <span className="hidden lg:block">
@@ -114,7 +130,7 @@ export default function DashboardPage() {
             </header>
 
             <main className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {issues.map((issue, index) => (
+              {filteredIssues.map((issue, index) => (
                 <Card key={index} className="flex flex-col justify-between">
                   <CardHeader>
                     <div className="flex items-center space-x-4">
