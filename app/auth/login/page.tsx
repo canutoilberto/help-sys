@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, FirebaseError } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -18,15 +18,22 @@ import {
 import { useUserStore } from "@/store/userStore";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    error: "",
+  });
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const { email, password } = formData;
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -35,7 +42,17 @@ export default function LoginPage() {
       setUser(userCredential.user);
       router.push("/dashboard");
     } catch (error) {
-      setError("Falha no login. Verifique suas credenciais.");
+      if (error instanceof FirebaseError) {
+        setFormData((prev) => ({
+          ...prev,
+          error: "Falha no login. Verifique suas credenciais.",
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          error: "Passamos por um problema. Por favor, tente novamente.",
+        }));
+      }
     }
   };
 
@@ -56,8 +73,8 @@ export default function LoginPage() {
                 type="email"
                 placeholder="seu@email.com"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
             <div className="space-y-2">
@@ -66,11 +83,13 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={handleChange}
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {formData.error && (
+              <p className="text-red-500 text-sm">{formData.error}</p>
+            )}
             <Button className="w-full" type="submit">
               Entrar
             </Button>
