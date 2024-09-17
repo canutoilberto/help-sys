@@ -14,7 +14,14 @@ export const useUserStore = create(
   persist<UserState>(
     (set) => ({
       user: null,
-      setUser: (user) => set({ user }),
+      setUser: (user) => {
+        set({ user });
+        if (user) {
+          localStorage.setItem("user-storage", JSON.stringify(user));
+        } else {
+          localStorage.removeItem("user-storage");
+        }
+      },
       createUserInFirestore: async (user) => {
         if (!user) return;
 
@@ -32,6 +39,7 @@ export const useUserStore = create(
     }),
     {
       name: "user-storage",
+      getStorage: () => localStorage, // Define o armazenamento como localStorage
     }
   )
 );
